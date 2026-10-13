@@ -1,0 +1,67 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile, role, and brushing statistics for each Gmail account",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Firebase Auth UID" },
+        "email": { "type": "string", "description": "User Gmail address" },
+        "displayName": { "type": "string", "description": "Display name of user or child" },
+        "photoURL": { "type": "string", "description": "User avatar URL" },
+        "role": { "type": "string", "enum": ["user", "superadmin"], "description": "Role of the user" },
+        "currentStreak": { "type": "number", "description": "Current consecutive days streak" },
+        "bestStreak": { "type": "number", "description": "Best consecutive days streak" },
+        "totalStars": { "type": "number", "description": "Total stars accumulated" },
+        "totalSessions": { "type": "number", "description": "Total brushing sessions completed" },
+        "selectedToothbrushId": { "type": "string", "description": "Currently equipped toothbrush ID" },
+        "lastBrushedDate": { "type": "string", "description": "YYYY-MM-DD of last brushing session" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Account creation timestamp" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Last update timestamp" }
+      },
+      "required": ["userId", "email", "role", "currentStreak", "bestStreak", "totalStars", "totalSessions", "selectedToothbrushId"]
+    },
+    "BrushingRecord": {
+      "title": "BrushingRecord",
+      "description": "Daily brushing record for morning and night sessions",
+      "type": "object",
+      "properties": {
+        "date": { "type": "string", "description": "YYYY-MM-DD date key" },
+        "morning": { "type": "boolean", "description": "Whether morning session is completed" },
+        "morningTime": { "type": "string", "description": "Time string of morning session" },
+        "night": { "type": "boolean", "description": "Whether night session is completed" },
+        "nightTime": { "type": "string", "description": "Time string of night session" },
+        "durationSeconds": { "type": "number", "description": "Total duration in seconds brushed today" },
+        "starsEarned": { "type": "number", "description": "Stars earned today" },
+        "userId": { "type": "string", "description": "Owner user UID" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Update timestamp" }
+      },
+      "required": ["date", "morning", "night", "durationSeconds", "starsEarned", "userId"]
+    },
+    "AdminRecord": {
+      "title": "AdminRecord",
+      "description": "Admin identity marker document",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "description": "Admin email address" },
+        "role": { "type": "string", "enum": ["superadmin"], "description": "Super admin role" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Designation timestamp" }
+      },
+      "required": ["email", "role"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "User profiles and aggregate brushing stats"
+    },
+    "/users/{userId}/records/{recordDate}": {
+      "schema": { "$ref": "#/entities/BrushingRecord" },
+      "description": "Daily morning and night brushing logs"
+    },
+    "/admins/{adminId}": {
+      "schema": { "$ref": "#/entities/AdminRecord" },
+      "description": "Admin role validation registry"
+    }
+  }
+}
